@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>05_components_composing</title>
+</head>
+<body>
+<div>
+  <h2>Welcome A!</h2>
+  <h2>Welcome B!</h2>
+  <h2>Welcome C!</h2>
+</div>
+<hr>
+
+<div id="example"></div>
+
+<script src="../js/react.js"></script>
+<script src="../js/react-dom.js"></script>
+<script src="../js/babel.min.js"></script>
+
+<script type="text/babel">
+  /*
+   1. 拆分组件: 拆分界面, 抽取组件
+     * 单个标题组件: Welcome
+     * 应用组件: App
+   2. 分析确定传递数据和数据类型
+     * Welcome: props.name  string
+     * App: props.names     array
+   */
+
+  //定义内部标题组件工厂方式
+   /*function Welcome (props){
+      return <h2>Welcome {props.wwkey} {props.wwname}!</h2>;
+   }*/
+    function Welcome ({wwkey,wwname}){
+      return <h2>Welcome {wwkey} {wwname}!</h2>;
+   }
+
+    Welcome.propTypes = {
+      wwname: React.PropTypes.string.isRequired
+    };
+   
+  //定义外部应用组件
+  class App extends React.Component {
+    render() {
+      return (
+        <div>
+          {
+            this.props.names.map(
+              //(name, index) =>{return  <Welcome wwname={name} key={index} wwkey={index}/> }
+              // 要求这里要有一个 key 属性 代表唯一值
+              (name, index) =><Welcome wwname={name} key={index} wwkey={index}/>
+            )
+          }
+        </div>
+      );
+    }
+  }
+  App.propTypes = {
+    names: React.PropTypes.array.isRequired
+  };
+
+  /**********************************************************/
+
+  var names = ['Tom', 'Jack', "Bob"];
+  ReactDOM.render(<App names={names}/>, document.getElementById('example'));
+  
+
+  /*
+    1.创建App的实例对象
+    2.调用其render 得到虚拟dom对象
+      <div>
+          <Welcome wwname={name} key={index} wwkey={index}/>
+          <Welcome wwname={name} key={index} wwkey={index}/>
+          <Welcome wwname={name} key={index} wwkey={index}/>
+      </div>
+    3.找出其中的组件标签 <Welcome>,调用对应的welcome函数，得到对应的虚拟dom来替换 <Welcome>
+       <div>
+            <h2>Welcome {wwkey} {wwname}!</h2>
+            <h2>Welcome {wwkey} {wwname}!</h2>
+            <h2>Welcome {wwkey} {wwname}!</h2>
+      </div>
+
+    4.将虚拟dom转换成真实dom 插入到文档中
+       
+  */
+</script>
+</body>
+</html>
